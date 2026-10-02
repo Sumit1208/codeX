@@ -51,6 +51,7 @@ export const loginUser = createAsyncThunk(
     async (credentials, { rejectWithValue }) => {
         try {
             const response = await axiosClient.post('/user/login', credentials);
+            console.log(response.data);
             return response.data;
         } catch (error) {
             return rejectWithValue(
@@ -81,7 +82,7 @@ export const getProfile = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosClient.get('/user/getProfile');
-    //   console.log(response.data);
+      // console.log(response.data);
       return response.data.user; 
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch profile');
@@ -208,7 +209,7 @@ const authSlice = createSlice({
             .addCase(loginUser.pending, (state) => { state.loading = true; state.error = null; })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.loading = false;
-                state.isAuthenticated = !!action.payload;;
+                state.isAuthenticated = !!action.payload;
                 state.user = action.payload.user;
             })
             .addCase(loginUser.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
@@ -218,7 +219,7 @@ const authSlice = createSlice({
             .addCase(verifyOtp.fulfilled, (state, action) => {
                 state.loading = false;
                 state.user = action.payload.user;
-                state.isAuthenticated = !!action.payload;;
+                state.isAuthenticated = !!action.payload;
             })
             
             .addCase(verifyOtp.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
@@ -229,11 +230,13 @@ const authSlice = createSlice({
             })
             .addCase(getProfile.fulfilled, (state, action) => {
             state.loading = false;
+            state.user = action.payload;
             state.profile = action.payload;
-            state.isAuthenticated = !!action.payload;;
+            state.isAuthenticated = !!action.payload;
             })
             .addCase(getProfile.rejected, (state) => {
             state.loading = false;
+            state.user = null;
             state.profile = null;
             state.isAuthenticated = false;
             })
